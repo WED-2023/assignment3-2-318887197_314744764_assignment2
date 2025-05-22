@@ -20,7 +20,6 @@ router.use(async function (req, res, next) {
   }
 });
 
-
 /**
  * This path gets body with recipeId and save this recipe in the favorites list of the logged-in user
  */
@@ -33,7 +32,7 @@ router.post('/favorites', async (req,res,next) => {
     } catch(error){
     next(error);
   }
-})
+});
 
 /**
  * This path returns the favorites recipes that were saved by the logged-in user
@@ -52,6 +51,34 @@ router.get('/favorites', async (req,res,next) => {
   }
 });
 
+/**
+ * Remove a recipe from the favorites list of the logged-in user
+ */
+router.delete('/favorites', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    const recipe_id = req.body.recipeId;
+    await user_utils.removeFavoriteRecipe(user_id,recipe_id);
+    res.status(200).send("The Recipe successfully removed from favorites");
+  } catch(error){
+    next(error);
+  } 
+});
+
+/**
+ * Create a new Family recipe
+ */
+router.post('/FullFamilyRecipe', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    const recipe_id = req.body.recipeId;
+    await user_utils.addFamilyRecipe(user_id,recipe_id);
+    res.status(200).send("The Recipe successfully saved as family recipe");
+  } catch(error){
+    next(error);
+  }
+}
+)
 
 
 

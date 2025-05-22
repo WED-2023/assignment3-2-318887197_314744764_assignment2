@@ -1,6 +1,7 @@
 openapi: 3.0.3
 servers:
   # Added by API Auto Mocking Plugin
+  # TODO: fit api to the template
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/leanDenis/svivot_api/1.0.0
 info:
@@ -83,8 +84,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Recipe'
         description: Recipe to add    
-        
-        
+             
   /FullFamilyRecipe:
     post:
       tags:
@@ -327,45 +327,162 @@ paths:
         '500':
           description: Server error
 
-
-  
-  /User:
+  /Register:
     post:
       tags:
         - User
-      summary: Create a user in the system
-      operationId: addUser
-      description: This operation adds a new user to the database of the system, allowing the user more functionality
+      summary: Register a new user
+      operationId: registerUser
+      description: Register a new user in the system.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-        description: New user
       responses:
-      
-        '200':
-          description: item created
+        '201':
+          description: User created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User' 
-        
-        '400':
-          description: 'invalid input, object invalid'
-          
+                type: object
+                properties:
+                  message:
+                    type: string
+                  success:
+                    type: boolean
         '409':
-          description: an existing item already exists
-          
-        '422':
-          description: Unprocessable Entity – validation errors
+          description: Username taken
+        '400':
+          description: Invalid input
+
+  /Login:
+    post:
+      tags:
+        - User
+      summary: Login a user
+      operationId: loginUser
+      description: Login with username and password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login succeeded
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                  
+                type: object
+                properties:
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+        '401':
+          description: Username or Password incorrect
+
+  /Logout:
+    post:
+      tags:
+        - User
+      summary: Logout the current user
+      operationId: logoutUser
+      description: Logout the current user and clear the session.
+      responses:
+        '200':
+          description: Logout succeeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  success:
+                    type: boolean 
     
+  /users/favorites:
+    post:
+      tags:
+        - User
+      summary: Add a recipe to the user's favorites
+      operationId: addFavoriteRecipe
+      description: Save a recipe as a favorite for the logged-in user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipeId:
+                  type: integer
+                  description: The ID of the recipe to add to favorites
+      responses:
+        '200':
+          description: Recipe successfully saved as favorite
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: The Recipe successfully saved as favorite
+        '401':
+          description: Unauthorized
+
+    get:
+      tags:
+        - User
+      summary: Get the user's favorite recipes
+      operationId: getFavoriteRecipes
+      description: Retrieve the list of favorite recipes for the logged-in user.
+      responses:
+        '200':
+          description: List of favorite recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipe_representation'
+        '401':
+          description: Unauthorized
+  
+    delete:
+      tags:
+        - User
+      summary: Remove a recipe from the user's favorites
+      operationId: removeFavoriteRecipe
+      description: Remove a recipe from the user's favorites.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipeId:
+                  type: integer
+                  description: The ID of the recipe to remove from favorites
+      responses:
+        '200':
+          description: Recipe successfully removed from favorites
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: The Recipe successfully removed from favorite
+        '401':
+          description: Unauthorized
+
 components:
   schemas:
   
