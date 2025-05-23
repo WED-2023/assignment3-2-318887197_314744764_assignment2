@@ -7,16 +7,28 @@ what we changed:
 - changed User post req to Register path
 - added Login, Logout req
 - added (get,post,delete) favorites to api
-- 
+- added sql tables
 
 to discuss:
 
 decisions:
-template -> api
+- template -> api
+- local recipes will have an id that may conflic with spoonacular ids so 
+the tables will have a referance of the source of the recipe and the server will
+broadcast id's as L(id) for locally saved recipes and S(id) for spoonacular recipes
+keeping thee uniqueness of the ids
 
 TODO:
 - hash or smt the api key as it is not safe to save it in plaintext
-- see what changes to the DB need to be made 
-- try not to hang myself
-- really try not to hang myself
-- get rid of the rope not to hang myself
+- check what to do with the errors
+- fix comments
+- resplit the files
+- sort the gets by the date or smth
+
+Done: 
+- Register user
+- Login?
+- Logout?
+- Get full recipe from spoon and local db
+- Created dbs 
+- added watched, favorites and likes

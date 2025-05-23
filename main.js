@@ -7,6 +7,15 @@ const session = require("client-sessions");
 const DButils = require("./routes/utils/DButils");
 var cors = require('cors')
 
+// api key workaround
+const fs = require('fs');
+
+// Read API key from api-key.txt
+const apiKeyPath = path.join(__dirname, 'api_key.txt');
+if (fs.existsSync(apiKeyPath)) {
+  process.env.spooncular_apiKey = fs.readFileSync(apiKeyPath, 'utf8').trim();
+}
+
 var app = express();
 app.use(logger("dev")); //logger
 app.use(express.json()); // parse application/json
@@ -39,16 +48,16 @@ app.get("/",function(req,res)
 
 });
 
-// app.use(cors());
-// app.options("*", cors());
+app.use(cors());
+app.options("*", cors());
 
-// const corsConfig = {
-//   origin: true,
-//   credentials: true
-// };
+const corsConfig = {
+  origin: true,
+  credentials: true
+};
 
-// app.use(cors(corsConfig));
-// app.options("*", cors(corsConfig));
+app.use(cors(corsConfig));
+app.options("*", cors(corsConfig));
 
 var port = process.env.PORT || "80"; //local=3000 remote=80
 //#endregion
@@ -74,26 +83,20 @@ app.use(function (req, res, next) {
 });
 //#endregion
 
-// ----> For cheking that our server is alive
+// ----> For cheking that our server is alive - Debug
 app.get("/alive", (req, res) => res.send("I'm alive"));
 
 // Routings
 app.use("/users", user);
 app.use("/recipes", recipes);
 app.use("/", auth);
-
-
-
-
-
+// TODO add your routes here
 
 // Default router
 app.use(function (err, req, res, next) {
   console.error(err);
   res.status(err.status || 500).send({ message: err.message, success: false });
 });
-
-
 
 const server = app.listen(port, () => {
   console.log(`Server listen on port ${port}`);
