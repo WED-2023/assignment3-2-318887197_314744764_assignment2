@@ -17,18 +17,41 @@ decisions:
 the tables will have a referance of the source of the recipe and the server will
 broadcast id's as L(id) for locally saved recipes and S(id) for spoonacular recipes
 keeping thee uniqueness of the ids
+- all incoming messages will be in the body
+
 
 TODO:
 - hash or smt the api key as it is not safe to save it in plaintext
 - check what to do with the errors
 - fix comments
-- resplit the files
-- sort the gets by the date or smth
+- check that all the incoming messages are read and required in the body
+- fix bugs
+
 
 Done: 
 - Register user
-- Login?
-- Logout?
+- Login
+- Logout
 - Get full recipe from spoon and local db
 - Created dbs 
-- added watched, favorites and likes
+- added watched, favorites and likes? no way to check 
+- sorted by newest ↑
+- added get 3 random recipes
+
+recipe format:
+    recipe = {
+        id: "L" + recipe.id,
+        title: recipe.title,
+        readyInMinutes: recipe.readyInMinutes,
+        servings: recipe.servings,
+        glutenFree: recipe.glutenFree,
+        vegan: recipe.vegan,
+        vegetarian: recipe.vegetarian,
+        ingredients: JSON.parse(recipe.ingredients),
+        instructions: recipe.instructions,
+        image: recipe.image,
+        aggregateLikes: local_likes,
+        family_creator: recipe.family_creator,
+        family_occasion: recipe.family_occasion,
+        family_pictures: JSON.parse(recipe.family_pictures)
+    }

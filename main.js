@@ -25,7 +25,7 @@ app.use(
     //secret: process.env.COOKIE_SECRET, // the encryption key
     secret: "template", // the encryption key
     duration: 24 * 60 * 60 * 1000, // expired after 20 sec
-    activeDuration: 1000 * 60 * 5, // if expiresIn < activeDuration,
+    activeDuration: 1000 * 60 * 10, // if expiresIn < activeDuration,
     cookie: {
       httpOnly: false,
     }
@@ -48,9 +48,6 @@ app.get("/",function(req,res)
 
 });
 
-app.use(cors());
-app.options("*", cors());
-
 const corsConfig = {
   origin: true,
   credentials: true
@@ -68,11 +65,11 @@ const auth = require("./routes/auth");
 
 //#region cookie middleware
 app.use(function (req, res, next) {
-  if (req.session && req.session.user_id) {
-    DButils.execQuery("SELECT user_id FROM users")
+  if (req.session && req.session.id) {
+    DButils.execQuery("SELECT id FROM users")
       .then((users) => {
-        if (users.find((x) => x.user_id === req.session.user_id)) {
-          req.user_id = req.session.user_id;
+        if (users.find((x) => x.id === req.session.id)) {
+          req.id = req.session.id;
         }
         next();
       })
