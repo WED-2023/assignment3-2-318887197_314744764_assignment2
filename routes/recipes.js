@@ -3,17 +3,18 @@ var router = express.Router();
 const recipes_utils = require("./utils/recipes_utils");
 const { is } = require("express/lib/request");
 
-// Debugging path
+// Debugging path to check if the router is working
 router.get("/", (req, res) => res.send("im here"));
 
 
 /**
+ * Get recipe information by ID.
  * Looks for the recipe with the given id in the local or remote database.
  * L for local recipes and S for remote recipes.
  * Example:
  * - L1 for local recipe with id 1
  * - S123 for remote recipe with id 123
- * @returns {Object} recipe - The recipe object containing details about the recipe - See Readme.
+ * @returns {Object} recipe - The recipe object containing details about the recipe
  */
 router.get("/info", async (req, res, next) => {
   try {
@@ -26,7 +27,7 @@ router.get("/info", async (req, res, next) => {
     // Check if the recipe is local or from spoonacular
     const isLocal = recipeId.charAt(0) === 'L';
 
-    // Remove the first character (L or S)
+    // Remove the first character (L or S) to get the numeric id
     const recipe_id = recipeId.substring(1);
     let recipe;
     if (isLocal) {
@@ -43,8 +44,8 @@ router.get("/info", async (req, res, next) => {
 });
 
 /**
- * This path returns a list of recipes by their ids
- * @Param {int} number - The number of recipes to return
+ * Get a list of random recipes.
+ * @Param {int} number - The number of recipes to return (default 3)
  */
 router.get("/random", async (req, res, next) => {
   try {
@@ -65,6 +66,10 @@ router.get("/random", async (req, res, next) => {
   }
 });
 
+/**
+ * Search for recipes using filters.
+ * Accepts search parameters in the request body and returns matching recipe IDs.
+ */
 router.post("/Search", async (req, res, next) => {
   try {
     // Get search parameters from the request body
@@ -82,7 +87,10 @@ router.post("/Search", async (req, res, next) => {
 
 
 /**
- * Helper function to check if the recipe id is valid
+ * Helper function to check if the recipe id is valid.
+ * Valid IDs are in the form L[1-9][0-9]* or S[1-9][0-9]*
+ * @param {string} recipe_id
+ * @returns {boolean}
  */
 function valid_id(recipe_id) {
   // Check if the recipe id is in the form L[1-9][0-9] or S[1-9][0-9]

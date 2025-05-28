@@ -4,11 +4,15 @@ const MySql = require("../routes/utils/MySql");
 const DButils = require("../routes/utils/DButils");
 const bcrypt = require("bcrypt");
 
+/**
+ * Register a new user.
+ * - Checks if username already exists.
+ * - Hashes the password.
+ * - Inserts the new user into the database.
+ */
 router.post("/Register", async (req, res, next) => {
   try {
-    // parameters exists
-    // valid parameters
-    // username exists
+    // Gather user details from request body
     let user_details = {
       username: req.body.username,
       firstname: req.body.firstname,
@@ -18,18 +22,21 @@ router.post("/Register", async (req, res, next) => {
       email: req.body.email,
       profilePic: req.body.profilePic
     }
+    // Get all existing usernames
     let users = [];
     users = await DButils.execQuery("SELECT username from users");
 
+    // Check if username is already taken
     if (users.find((x) => x.username === user_details.username))
       throw { status: 409, message: "Username taken" };
 
-    // add the new username
+    // Hash the password
     let hash_password = bcrypt.hashSync(
       user_details.password,
       parseInt(process.env.bcrypt_saltRounds)
     );
 
+    // Insert new user into the database
     await DButils.execQuery(
       `INSERT INTO users (username, firstname, lastname, country, password, email) VALUES ('${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
       '${user_details.country}', '${hash_password}', '${user_details.email}')`
@@ -40,34 +47,45 @@ router.post("/Register", async (req, res, next) => {
   }
 });
 
+/**
+ * Login a user.
+ * - Checks if the username exists.
+ * - Verifies the password.
+ * - Sets the session id.
+ */
 router.post("/Login", async (req, res, next) => {
   try {
-    // check that username exists
+    // Check that username exists
     const users = await DButils.execQuery("SELECT username FROM users");
     if (!users.find((x) => x.username === req.body.username))
       throw { status: 401, message: "Username or Password incorrect" };
 
-    // check that the password is correct
+    // Get user details from database
     const user = (
       await DButils.execQuery(
         `SELECT * FROM users WHERE username = '${req.body.username}'`
       )
     )[0];
 
+    // Check that the password is correct
     if (!bcrypt.compareSync(req.body.password, user.password)) {
       throw { status: 401, message: "Username or Password incorrect" };
     }
 
-    // Set cookie
+    // Set session id for the user
     req.session.id = user.id;
 
-    // return cookie
+    // Return success response
     res.status(200).send({ message: "login succeeded " , success: true });
   } catch (error) {
     next(error);
   }
 });
 
+/**
+ * Logout the current user.
+ * - Resets the session.
+ */
 router.post("/Logout", function (req, res) {
   req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
   res.send({ success: true, message: "logout succeeded" });

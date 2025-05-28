@@ -1,30 +1,50 @@
 const DButils = require("./DButils");
 
+/**
+ * Mark a recipe as favorite for a user.
+ * @param {number} user_id - The user's ID
+ * @param {number} recipe_id - The recipe's ID
+ * @param {boolean} islocal - True if the recipe is local, false if remote
+ */
 async function markAsFavorite(user_id, recipe_id, islocal) {
     await DButils.execQuery(
   `INSERT INTO FavoriteRecipes (user_id, recipe_id, dt, isLocal) VALUES ('${user_id}', '${recipe_id}', NOW(), ${islocal})`
     );
 }
 
+/**
+ * Get all favorite recipe IDs for a user, sorted by newest first.
+ * Returns an array of strings with 'L' or 'S' prefix.
+ */
 async function getFavoriteRecipes(user_id){
     let recipes_id = await DButils.execQuery(`select recipe_id, isLocal from FavoriteRecipes where user_id='${user_id}' ORDER BY dt DESC`);
 
-    // Convert the recipe_id to a string with 'L' or 'S' prefix, and remove isLocal property
+    // Convert the recipe_id to a string with 'L' or 'S' prefix
     recipes_id = recipes_id.map(recipe => (recipe.isLocal ? 'L' : 'S') + recipe.recipe_id);
 
     return recipes_id;
 }
 
+/**
+ * Remove a recipe from the user's favorites.
+ */
 async function removeFavoriteRecipe(user_id, recipe_id, islocal) {
     await DButils.execQuery(`delete from FavoriteRecipes where user_id='${user_id}' and recipe_id=${recipe_id} and islocal=${islocal}`);
 }
 
+/**
+ * Mark a recipe as watched for a user.
+ */
 async function markAsWatched(user_id, recipe_id, islocal) {
     await DButils.execQuery(
   `INSERT INTO LastWatched (user_id, recipe_id, dt, isLocal) VALUES ('${user_id}', '${recipe_id}', NOW(), ${islocal})`
 );
 }
 
+/**
+ * Get all watched recipe IDs for a user, sorted by newest first.
+ * Returns an array of strings with 'L' or 'S' prefix.
+ */
 async function getLastWatched(user_id){
     let recipes_id = await DButils.execQuery(`select recipe_id, isLocal from LastWatched where user_id='${user_id}' ORDER BY dt DESC`);
     
@@ -34,29 +54,46 @@ async function getLastWatched(user_id){
     return recipes_id;
 }
 
+/**
+ * Remove a recipe from the user's watched list.
+ */
 async function removeLastWatched(user_id, recipe_id, islocal) {
     await DButils.execQuery(`delete from LastWatched where user_id='${user_id}' and recipe_id=${recipe_id} and islocal=${islocal}`);
 }
 
+/**
+ * Mark a recipe as liked for a user.
+ */
 async function markAsLiked(user_id, recipe_id, islocal) {
     await DButils.execQuery(
   `INSERT INTO Likes (user_id, recipe_id, dt, isLocal) VALUES ('${user_id}', '${recipe_id}', NOW(), ${islocal})`
 );
 }
 
+/**
+ * Get all liked recipe IDs for a user, sorted by newest first.
+ * Returns an array of strings with 'L' or 'S' prefix.
+ */
 async function getLikes(user_id){
     let recipes_id = await DButils.execQuery(`select recipe_id, isLocal from Likes where user_id='${user_id}' ORDER BY dt DESC`);
     
-    // Convert the recipe_id to a string with 'L' or 'S' prefix, and remove isLocal property
+    // Convert the recipe_id to a string with 'L' or 'S' prefix
     recipes_id = recipes_id.map(recipe => (recipe.isLocal ? 'L' : 'S') + recipe.recipe_id);
     
     return recipes_id;
 }
 
+/**
+ * Remove a recipe from the user's liked list.
+ */
 async function removeLike(user_id, recipe_id, islocal) {
     await DButils.execQuery(`delete from Likes where user_id='${user_id}' and recipe_id=${recipe_id} and islocal=${islocal}`);
 }
 
+/**
+ * Get all non-family recipe IDs created by the user.
+ * Returns an array of objects: { recipe_id: 'L123' }
+ */
 async function getMyRecipes(user_id) {
     // Fetch recipe ids created by the user and family creator is null
     let recipes = await DButils.execQuery(
@@ -71,6 +108,10 @@ async function getMyRecipes(user_id) {
     return recipes;
 }
 
+/**
+ * Get all family recipe IDs created by the user.
+ * Returns an array of objects: { recipe_id: 'L123' }
+ */
 async function getFamilyRecipes(user_id) {
     // Fetch recipe ids created by the user and family creator is not null
     let recipes = await DButils.execQuery(
@@ -85,6 +126,9 @@ async function getFamilyRecipes(user_id) {
     return recipes;
 }
 
+/**
+ * Add a new recipe to the Recipes table and return its new id.
+ */
 async function addRecipe(user_id, recipe) {
     // Insert a new recipe into the Recipes table and get its id
     const result = await DButils.execQuery(
@@ -111,6 +155,7 @@ async function addRecipe(user_id, recipe) {
     return idResult[0].id;
 }
 
+// Export all utility functions
 exports.markAsFavorite = markAsFavorite;
 exports.getFavoriteRecipes = getFavoriteRecipes;
 exports.removeFavoriteRecipe = removeFavoriteRecipe;

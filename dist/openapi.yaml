@@ -133,7 +133,7 @@ paths:
                     type: string
                     example: No recipes found
           
-  /Search:
+  /recipes/Search:
     post:
       tags:
         - Recipe
@@ -732,35 +732,3 @@ components:
           enum: [5, 10, 15]
           default: 5
           
-    ErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Validation failed
-        errors:
-          type: array
-          items:
-            type: object
-            properties:
-              field:
-                type: string
-                example: name
-              message:
-                type: string
-                example: Name is required.
-
-                ## TO DO ADD TO USER SCHEME THREE LAST WATCHED RECIPES_REPRESENTATIONS - page 4 bottom instrc
-                ## GET REQUEST WHEN USER/GUEST CLICKS TO VIEW RECIPE 
-                ## TO DO ADD SEARCH HISTORY TO USER
-                ## maybe change user to have DIFFERENT LISTS OF RECEPIE REPRESENTATIONS NOT RECIPE
-                ## id of recipe will be given at post and used in gets
-                ## GENERAL REQUEST OF GET OF ENTERING SITE/refreshing random recipe - 3 random recipes_REPRESENTATIONS
-                ## REGISTER USER REQUEST POST OF ADDING TO THE DATABASE
-                ## CHANGE SCHEME FOR RECIPE TO INCLUDE FAMILY RECIPE OPTIONAL PARAMETERS
-                ## MAKE POST FOR FAMILY RECIPE (INCLUDES IN RECIPE THE OPTIONAL PARAMETERS)
-                
-                
-                # GET REQUEST AFTER USER REQUEST HIS RECIPES (MAY BE FAMILY RECIPE)
-                # GET REQUEST FOR SEARCHING RECIPES (IF SORTED THIS ONE IS CALLED AGAIN SO ADD PARAMETERS FOR SORTING)
-                # at the end check examples/summary/descriptions

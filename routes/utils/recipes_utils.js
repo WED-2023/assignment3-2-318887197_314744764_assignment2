@@ -3,7 +3,13 @@ const DButils = require("./DButils");
 const e = require("express");
 const api_domain = "https://api.spoonacular.com/recipes";
 
-// get the recipe information from the spooncular API
+/**
+ * Fetches full recipe information from the Spoonacular API by recipe ID.
+ * Adds local likes from the database to the aggregateLikes field.
+ * Formats the recipe object to match the local schema.
+ * @param {string} recipe_id - The Spoonacular recipe ID
+ * @returns {object} Formatted recipe object
+ */
 async function getRemoteRecipeInformation(recipe_id) {
     let recipe = await axios.get(`${api_domain}/${recipe_id}/information`, {
         params: {
@@ -11,22 +17,22 @@ async function getRemoteRecipeInformation(recipe_id) {
             apiKey: process.env.spooncular_apiKey
         }
     });
-    // format the recipe
     recipe = recipe.data;
 
-    // Get the ingredients as a list of ("item", "amount", "measure") tuples
+    // Format ingredients as [name, amount, unit]
     let formatted_ingredients = recipe.extendedIngredients.map(ingredient => [
         ingredient.name,
         ingredient.amount,
         ingredient.unit
     ]);
 
-    // Get the likes from the db
+    // Get local likes for this remote recipe
     let local_likes = await DButils.execQuery(
         `SELECT COUNT(*) as count FROM Likes WHERE recipe_id='${recipe.id}' and isLocal=0`
     );
     local_likes = local_likes[0].count;
 
+    // Build the formatted recipe object
     let formatted_recipe = {
         id: "S" + recipe.id,
         title: recipe.title,
@@ -46,7 +52,13 @@ async function getRemoteRecipeInformation(recipe_id) {
     return formatted_recipe;
 }
 
-// get the recipe information from the local database
+/**
+ * Fetches full recipe information from the local database by recipe ID.
+ * Adds local likes from the database.
+ * Formats the recipe object to match the local schema.
+ * @param {string} recipe_id - The local recipe ID (number)
+ * @returns {object} Formatted recipe object
+ */
 async function getLocalRecipeInformation(recipe_id) {
     let recipe = await DButils.execQuery(
         `SELECT id, title, readyInMinutes, servings, glutenFree, vegan, vegetarian, ingredients, instructions, image, family_creator, family_occasion, family_pictures 
@@ -58,7 +70,7 @@ async function getLocalRecipeInformation(recipe_id) {
     }
     recipe = recipe[0];
 
-    // Get the likes from the db
+    // Get local likes for this recipe
     let local_likes = await DButils.execQuery(
         `SELECT COUNT(*) as count FROM Likes WHERE recipe_id='${recipe.id}' and isLocal=1`
     );
@@ -66,7 +78,7 @@ async function getLocalRecipeInformation(recipe_id) {
 
     console.log("ingredients", recipe.ingredients);
 
-    // format the recipe
+    // Build the formatted recipe object
     recipe = {
         id: "L" + recipe.id,
         title: recipe.title,
@@ -87,23 +99,10 @@ async function getLocalRecipeInformation(recipe_id) {
 }
 
 /**
- * This function returns a random number of recipes from the local database and the spooncular API.
- * It first gets a random number of recipes from the local database, then gets the rest from the spooncular API.
- * It returns an array of recipes, each recipe is an object with the following properties:
- * - id: the recipe id, prefixed with 'L' for local recipes and 'S' for spooncular recipes
- * - title: the recipe title
- * - readyInMinutes: the time it takes to prepare the recipe
- * - servings: the number of servings the recipe makes
- * - glutenFree: whether the recipe is gluten free
- * - vegan: whether the recipe is vegan
- * - vegetarian: whether the recipe is vegetarian
- * - ingredients: an array of ingredients, each ingredient is an array of [name, amount, unit]
- * - instructions: the instructions for preparing the recipe
- * - image: the URL of the recipe image
- * - aggregateLikes: the total number of likes for the recipe, including local and remote likes 
- * - family_creator: the creator of the recipe in the family
- * - family_occasion: the occasion for which the recipe was created in the family
- * @param {int} number 
+ * Returns a random selection of recipes from both the local database and the Spoonacular API.
+ * Combines and shuffles the results, then returns the requested number.
+ * @param {int} number - The total number of recipes to return
+ * @returns {Array} Array of formatted recipe objects
  */
 async function getRandomRecipe(number) {
     // Get the number of recipes in the local database
@@ -113,9 +112,10 @@ async function getRandomRecipe(number) {
 
     numberOfRecipesInLocal = numberOfRecipesInLocal[0].count;
 
-    // Get a random number to try to get from the local database
+    // Randomly decide how many to take from local
     let random = Math.floor(Math.random() * (Math.min(numberOfRecipesInLocal, number) + 1));
 
+    // Get random local recipes with their like counts
     let local_recipes = await DButils.execQuery(
     `SELECT r.id, r.title, r.readyInMinutes, r.servings, r.glutenFree, r.vegan, r.vegetarian, r.ingredients, r.instructions, r.image, r.family_creator, r.family_occasion, r.family_pictures,
             COUNT(l.user_id) AS aggregateLikes
@@ -126,7 +126,7 @@ async function getRandomRecipe(number) {
      LIMIT ${random}`
     );
 
-    // format the local recipes
+    // Format local recipes
     local_recipes = local_recipes.map(recipe => {
         return {
             id: "L" + recipe.id,
@@ -146,7 +146,7 @@ async function getRandomRecipe(number) {
         };
     });
 
-    // Get number-random recipes from the spooncular API
+    // Get the rest from Spoonacular API
     let remote_recipes = await axios.get(`${api_domain}/random`, {
         params: {
             number: number - random,
@@ -179,7 +179,7 @@ async function getRandomRecipe(number) {
         aggregateLikes: (recipe.aggregateLikes || 0) + (likesMap[recipe.id] || 0)
     }));
 
-    // Format the ingredients of the remote recipes
+    // Format remote recipes
     remote_recipes = remote_recipes.map(recipe => {
         let formatted_ingredients = recipe.extendedIngredients.map(ingredient => [
             ingredient.name,
@@ -204,16 +204,20 @@ async function getRandomRecipe(number) {
         };
     });
 
-    // Combine local and remote recipes
+    // Combine and shuffle
     let combined_recipes = local_recipes.concat(remote_recipes);
-
-    // Shuffle the combined recipes
     combined_recipes.sort(() => Math.random() - 0.5);
 
-    // Return all recipes
+    // Return the requested number of recipes
     return combined_recipes.slice(0, number);
 }
 
+/**
+ * Searches for recipes using the Spoonacular API based on provided filters.
+ * Returns an array of matching recipe IDs (prefixed with 'S').
+ * @param {object} filters - Search filters (title, cuisine, diet, intolerances, amount)
+ * @returns {Array} Array of recipe ID strings
+ */
 async function Search({ title, cuisine, diet, intolerances, amount }) {
     // Get the recipe IDs from the spooncular API based on the search parameters
     let response = await axios.get(`${api_domain}/complexSearch`, {
@@ -231,7 +235,7 @@ async function Search({ title, cuisine, diet, intolerances, amount }) {
     return recipeIds;
 }
 
-
+// Export all utility functions
 exports.getRemoteRecipeInformation = getRemoteRecipeInformation;
 exports.getLocalRecipeInformation = getLocalRecipeInformation;
 exports.getRandomRecipe = getRandomRecipe;

@@ -3,13 +3,15 @@
 
 how to use api key - https://spoonacular.com/food-api/docs#Authentication
 
+IDs 
+Lea Shmilovich 314744764
+Denis Streltsovski 318887197
+
 what we changed:
 - changed User post req to Register path
 - added Login, Logout req
 - added (get,post,delete) favorites to api
 - added sql tables
-
-to discuss:
 
 decisions:
 - template -> api
@@ -21,22 +23,7 @@ keeping thee uniqueness of the ids
 
 
 TODO:
-- hash or smt the api key as it is not safe to save it in plaintext
 - check what to do with the errors
-- fix comments
-- check that all the incoming messages are read and required in the body
-- fix bugs
-
-
-Done: 
-- Register user
-- Login
-- Logout
-- Get full recipe from spoon and local db
-- Created dbs 
-- added watched, favorites and likes? no way to check 
-- sorted by newest ↑
-- added get 3 random recipes
 
 recipe format:
     recipe = {
