@@ -41,20 +41,14 @@ paths:
         - Recipe
       summary: Get full details of a recipe by its id
       description: This path returns the full details of a recipe by its id. The id should start with 'L' for local recipes or 'S' for Spoonacular recipes.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                recipeId:
-                  type: string
-                  example: L123
-                  pattern: '^(L|S)[1-9][0-9]*$'
-              required:
-                - recipeId
-              description: The recipe id (starts with 'L' for local or 'S' for Spoonacular)
+      parameters:
+        - in: query
+          name: recipeId
+          required: true
+          schema:
+            type: string
+            pattern: '^(L|S)[1-9][0-9]*$'
+          description: The recipe id (starts with 'L' for local or 'S' for Spoonacular)
       responses:
         '200':
           description: Full recipe details
@@ -89,20 +83,15 @@ paths:
         - Recipe
       summary: Get a list of random recipes
       description: Returns a list of random recipes from both local and remote sources.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                number:
-                  type: integer
-                  minimum: 1
-                  default: 3
-                  description: The number of random recipes to return (default is 3)
-              required:
-                - number
+      parameters:
+        - in: query
+          name: number
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 3
+          description: The number of random recipes to return (default is 3)
       responses:
         '200':
           description: A list of random recipes

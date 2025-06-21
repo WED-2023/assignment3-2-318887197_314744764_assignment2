@@ -18,7 +18,7 @@ router.get("/", (req, res) => res.send("im here"));
  */
 router.get("/info", async (req, res, next) => {
   try {
-    let recipeId = req.body.recipeId;
+    let recipeId = req.query.recipeId;
     // Validate the recipeId parameter
     if (!valid_id(recipeId)) {
       return res.status(400).send({ error: "Invalid recipe ID" });
@@ -50,7 +50,7 @@ router.get("/info", async (req, res, next) => {
 router.get("/random", async (req, res, next) => {
   try {
     // Get the 'number' parameter from the query string, default to 3 if not provided
-    const number = parseInt(req.body.number) || 3;
+    const number = parseInt(req.query.number) || 3;
     if (isNaN(number) || number < 1) {
       return res.status(400).send({ error: "Invalid number parameter" });
     }
