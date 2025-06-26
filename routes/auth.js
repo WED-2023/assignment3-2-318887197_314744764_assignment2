@@ -75,4 +75,25 @@ router.post("/Logout", function (req, res) {
   res.send({ success: true, message: "logout succeeded" });
 });
 
+router.get("/me", async function (req, res) {
+  // check if there is a cookie
+  if (req.session && req.session.id) {
+    const user = await DButils.execQuery(`SELECT username, firstname, lastname FROM users WHERE id = '${req.session.id}'`);
+    if (user && user.length > 0) {
+      res.status(200).json({
+        username: user[0].username,
+        firstname: user[0].firstname,
+        lastname: user[0].lastname,
+      });
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  }
+  else {
+    res.status(401).json({
+      error: "Unauthorized, no session stored"
+    })
+  }
+});
+
 module.exports = router;

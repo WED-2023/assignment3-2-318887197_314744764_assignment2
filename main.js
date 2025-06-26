@@ -10,6 +10,16 @@ var cors = require('cors')
 var app = express();
 app.use(logger("dev")); //logger
 app.use(express.json()); // parse application/json
+
+const corsConfig = {
+  origin: 'https://localhost:8080',
+  credentials: true
+};
+
+app.use(cors(corsConfig));
+app.options("*", cors(corsConfig));
+
+
 app.use(
   session({
     cookieName: "session", // the cookie key name
@@ -19,6 +29,8 @@ app.use(
     activeDuration: 1000 * 60 * 5, // if expiresIn < activeDuration,
     cookie: {
       httpOnly: false,
+      sameSite: "lax", // <-- allow cross-site cookies
+      secure: false      // <-- required for sameSite: "none"
     }
     //the session will be extended by activeDuration milliseconds
   })
@@ -26,13 +38,20 @@ app.use(
 app.use(express.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, "public"))); //To serve static files such as images, CSS files, and JavaScript files
 //local:
+<<<<<<< Updated upstream
 app.use(express.static(path.join(__dirname, "dist")));
 //remote:
 // app.use(express.static(path.join(__dirname, '../assignment-3-3-frontend/dist')));
+=======
+app.use(express.static(path.join(__dirname, '../assignment3-3-318887197_314744764_assignment2/public')));
+//remote:
+//app.use(express.static(path.join(__dirname, '../assignment3_3-frontend-main/dist')));
+>>>>>>> Stashed changes
 
 app.get("/",function(req,res)
 { 
   //remote: 
+<<<<<<< Updated upstream
   // res.sendFile(path.join(__dirname, '../assignment-3-3-frontend/dist/index.html'));
   //local:
   res.sendFile(__dirname+"/index.html");
@@ -49,6 +68,15 @@ app.get("/",function(req,res)
 
 // app.use(cors(corsConfig));
 // app.options("*", cors(corsConfig));
+=======
+  //res.sendFile(path.join(__dirname, '../assignment3_3-frontend-main/dist/index.html'));
+  //local:
+  res.sendFile(path.join(__dirname, '../assignment3-3-318887197_314744764_assignment2/dist/index.html'));
+
+});
+
+
+>>>>>>> Stashed changes
 
 var port = process.env.PORT || "80"; //local=3000 remote=80
 //#endregion
