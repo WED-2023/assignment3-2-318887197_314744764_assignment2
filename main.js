@@ -40,9 +40,15 @@ app.use(express.static(path.join(__dirname, "public"))); //To serve static files
 //local:
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 app.use(express.static(path.join(__dirname, "dist")));
 //remote:
 // app.use(express.static(path.join(__dirname, '../assignment-3-3-frontend/dist')));
+=======
+app.use(express.static(path.join(__dirname, '../assignment3-3-318887197_314744764_assignment2/public')));
+//remote:
+//app.use(express.static(path.join(__dirname, '../assignment3_3-frontend-main/dist')));
+>>>>>>> Stashed changes
 =======
 app.use(express.static(path.join(__dirname, '../assignment3-3-318887197_314744764_assignment2/public')));
 //remote:
@@ -57,6 +63,7 @@ app.use(express.static(path.join(__dirname, '../assignment3-3-318887197_31474476
 app.get("/",function(req,res)
 { 
   //remote: 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
   // res.sendFile(path.join(__dirname, '../assignment-3-3-frontend/dist/index.html'));
@@ -75,6 +82,15 @@ app.get("/",function(req,res)
 
 // app.use(cors(corsConfig));
 // app.options("*", cors(corsConfig));
+=======
+  //res.sendFile(path.join(__dirname, '../assignment3_3-frontend-main/dist/index.html'));
+  //local:
+  res.sendFile(path.join(__dirname, '../assignment3-3-318887197_314744764_assignment2/dist/index.html'));
+
+});
+
+
+>>>>>>> Stashed changes
 =======
   //res.sendFile(path.join(__dirname, '../assignment3_3-frontend-main/dist/index.html'));
   //local:
