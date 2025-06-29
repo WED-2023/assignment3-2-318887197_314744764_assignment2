@@ -91,4 +91,29 @@ router.post("/Logout", function (req, res) {
   res.send({ success: true, message: "logout succeeded" });
 });
 
+
+/**
+ * 
+ */
+router.get("/me", async (req, res, next) => {
+  try {
+    // Check if user is logged in
+    if (!req.session.id) {
+      throw { status: 401, message: "Unauthorized" };
+    }
+
+    // Get username, firstname, lastname, country, email from the session
+    const user = (
+      await DButils.execQuery(
+        `SELECT username, firstname, lastname, country, email, profilePic FROM users WHERE id = ${req.session.id}`
+      )
+    )[0];
+
+    // Return user details
+    res.status(200).send(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
