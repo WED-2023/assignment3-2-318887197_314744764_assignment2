@@ -8,7 +8,9 @@ const DButils = require("./DButils");
  */
 async function markAsFavorite(user_id, recipe_id, islocal) {
     await DButils.execQuery(
-  `INSERT INTO FavoriteRecipes (user_id, recipe_id, dt, isLocal) VALUES ('${user_id}', '${recipe_id}', NOW(), ${islocal})`
+        `INSERT INTO FavoriteRecipes (user_id, recipe_id, dt, isLocal) 
+         VALUES ('${user_id}', '${recipe_id}', NOW(), ${islocal})
+         ON DUPLICATE KEY UPDATE dt = NOW()`
     );
 }
 
@@ -37,8 +39,10 @@ async function removeFavoriteRecipe(user_id, recipe_id, islocal) {
  */
 async function markAsWatched(user_id, recipe_id, islocal) {
     await DButils.execQuery(
-  `INSERT INTO LastWatched (user_id, recipe_id, dt, isLocal) VALUES ('${user_id}', '${recipe_id}', NOW(), ${islocal})`
-);
+        `INSERT INTO LastWatched (user_id, recipe_id, dt, isLocal) 
+         VALUES ('${user_id}', '${recipe_id}', NOW(), ${islocal})
+         ON DUPLICATE KEY UPDATE dt = NOW()`
+    );
 }
 
 /**
@@ -66,8 +70,10 @@ async function removeLastWatched(user_id, recipe_id, islocal) {
  */
 async function markAsLiked(user_id, recipe_id, islocal) {
     await DButils.execQuery(
-  `INSERT INTO Likes (user_id, recipe_id, dt, isLocal) VALUES ('${user_id}', '${recipe_id}', NOW(), ${islocal})`
-);
+        `INSERT INTO Likes (user_id, recipe_id, dt, isLocal) 
+         VALUES ('${user_id}', '${recipe_id}', NOW(), ${islocal})
+         ON DUPLICATE KEY UPDATE dt = NOW()`
+    );
 }
 
 /**
