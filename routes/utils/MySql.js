@@ -15,7 +15,7 @@ require("dotenv").config();
 const pool = mysql.createPool({
   host: '127.0.0.1', // or your DB host
   user: 'root',
-  password: 'pass_root@123',
+  password: '1234',
   database: 'mydb',
   port: 3306,
   waitForConnections: true,

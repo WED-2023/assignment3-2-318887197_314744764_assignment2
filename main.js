@@ -87,7 +87,7 @@ app.get("/alive", (req, res) => res.send("I'm alive"));
 app.use("/users", user);
 app.use("/recipes", recipes);
 app.use("/", auth);
-// TODO add your routes here
+
 
 // Default router
 app.use(function (err, req, res, next) {
