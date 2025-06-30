@@ -105,7 +105,7 @@ router.get("/me", async (req, res, next) => {
     // Get username, firstname, lastname, country, email from the session
     const user = (
       await DButils.execQuery(
-        `SELECT username, firstname, lastname, country, email, profilePic FROM users WHERE id = ${req.session.id}`
+        `SELECT username, firstname, lastname, country, email FROM users WHERE id = ${req.session.id}`
       )
     )[0];
 
