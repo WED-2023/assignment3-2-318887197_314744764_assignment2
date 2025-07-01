@@ -223,9 +223,9 @@ async function Search({ title, cuisine, diet, intolerances, amount }) {
     let response = await axios.get(`${api_domain}/complexSearch`, {
         params: {
             query: title,
-            cuisine: cuisine,
-            diet: diet,
-            intolerances: intolerances,
+            cuisine: Array.isArray(cuisine) ? cuisine.join(',') : cuisine,
+            diet: Array.isArray(diet) ? diet.join(',') : diet,
+            intolerances: Array.isArray(intolerances) ? intolerances.join(',') : intolerances,
             number: amount,
             apiKey: process.env.spooncular_apiKey
         }
