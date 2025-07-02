@@ -93,6 +93,9 @@ router.post("/Search", async (req, res, next) => {
  * @returns {boolean}
  */
 function valid_id(recipe_id) {
+  if (!recipe_id || typeof recipe_id !== 'string') {
+    return false;
+  }
   // Check if the recipe id is in the form L[1-9][0-9] or S[1-9][0-9]
   if (!recipe_id.match(/^[LS][1-9][0-9]*$/)) {
     return false;
