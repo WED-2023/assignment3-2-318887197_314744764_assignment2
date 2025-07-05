@@ -136,13 +136,13 @@ async function getRandomRecipe(number) {
             glutenFree: recipe.glutenFree,
             vegan: recipe.vegan,
             vegetarian: recipe.vegetarian,
-            ingredients: JSON.parse(recipe.ingredients),
+            ingredients: recipe.ingredients,
             instructions: recipe.instructions,
             image: recipe.image,
             aggregateLikes: recipe.aggregateLikes || 0, // Handle cases where there are no likes
             family_creator: recipe.family_creator,
             family_occasion: recipe.family_occasion,
-            family_pictures: JSON.parse(recipe.family_pictures)
+            family_pictures: recipe.family_pictures
         };
     });
 
