@@ -21,10 +21,6 @@ broadcast id's as L(id) for locally saved recipes and S(id) for spoonacular reci
 keeping thee uniqueness of the ids
 - all incoming messages will be in the body
 
-
-TODO:
-- check what to do with the errors
-
 recipe format:
     recipe = {
         id: "L" + recipe.id,
