@@ -93,23 +93,35 @@ router.post("/Logout", function (req, res) {
 
 
 /**
- * 
+ * Get current user information.
+ * Returns the logged-in user's profile details (username, firstname, lastname, country, email).
+ * Requires authentication - user must be logged in with a valid session.
+ * @route GET /me
+ * @returns {Object} User profile information
+ * @throws {401} If user is not authenticated (no valid session)
+ * @throws {404} If user not found in database
  */
 router.get("/me", async (req, res, next) => {
   try {
-    // Check if user is logged in
+    // Check if user is logged in by verifying session contains user ID
     if (!req.session.id) {
       throw { status: 401, message: "Unauthorized" };
     }
 
-    // Get username, firstname, lastname, country, email from the session
+    // Query database to get user profile information
+    // Only return non-sensitive fields (excludes password, etc.)
     const user = (
       await DButils.execQuery(
         `SELECT username, firstname, lastname, country, email FROM users WHERE id = ${req.session.id}`
       )
     )[0];
 
-    // Return user details
+    // Check if user exists in database
+    if (!user) {
+      throw { status: 404, message: "User not found" };
+    }
+
+    // Return user profile details
     res.status(200).send(user);
   } catch (error) {
     next(error);

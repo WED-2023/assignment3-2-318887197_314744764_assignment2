@@ -552,9 +552,104 @@ paths:
         '401':
           description: Unauthorized
 
+  /me:
+    get:
+      tags:
+        - Auth
+      summary: Get current user information
+      operationId: getCurrentUser
+      description: |
+        Returns the profile information of the currently logged-in user.
+        Requires a valid session cookie to be sent with the request.
+      responses:
+        '200':
+          description: User profile information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: john_doe
+                    description: The user's unique username
+                  firstname:
+                    type: string
+                    example: John
+                    description: The user's first name
+                  lastname:
+                    type: string
+                    example: Doe
+                    description: The user's last name
+                  country:
+                    type: string
+                    example: United States
+                    description: The user's country
+                  email:
+                    type: string
+                    format: email
+                    example: john.doe@example.com
+                    description: The user's email address
+                required:
+                  - username
+                  - firstname
+                  - lastname
+                  - country
+                  - email
+        '401':
+          description: Unauthorized - User not logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+                  success:
+                    type: boolean
+                    example: false
+        '404':
+          description: User not found in database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Database connection error
+                  success:
+                    type: boolean
+                    example: false
+      security:
+        - cookieAuth: []
+    
 components:
+
+  securitySchemes:
+    # Security schemes for the API
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Session cookie for authentication
+
   schemas:
-  
+    # Schemas for the API
     Recipe:
       type: object
       required:
