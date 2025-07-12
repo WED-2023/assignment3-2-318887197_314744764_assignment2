@@ -72,8 +72,9 @@ router.post("/Login", async (req, res, next) => {
       throw { status: 401, message: "Username or Password incorrect" };
     }
 
-    // Set session id for the user
-    req.session.id = user.id;
+    console.log("User logged in successfully, user id : " + user.id);
+
+    req.session.userId = user.id;
 
     // Return success response
     res.status(200).send({ message: "login succeeded " , success: true });
@@ -87,8 +88,13 @@ router.post("/Login", async (req, res, next) => {
  * - Resets the session.
  */
 router.post("/Logout", function (req, res) {
-  req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
-  res.send({ success: true, message: "logout succeeded" });
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send({ success: false, message: "Could not log out" });
+    }
+    res.clearCookie('session'); // Clear the session cookie
+    res.send({ success: true, message: "logout succeeded" });
+  });
 });
 
 
@@ -104,7 +110,7 @@ router.post("/Logout", function (req, res) {
 router.get("/me", async (req, res, next) => {
   try {
     // Check if user is logged in by verifying session contains user ID
-    if (!req.session.id) {
+    if (!req.session.userId) {
       throw { status: 401, message: "Unauthorized" };
     }
 
@@ -112,7 +118,7 @@ router.get("/me", async (req, res, next) => {
     // Only return non-sensitive fields (excludes password, etc.)
     const user = (
       await DButils.execQuery(
-        `SELECT username, firstname, lastname, country, email FROM users WHERE id = ${req.session.id}`
+        `SELECT username, firstname, lastname, country, email FROM users WHERE id = ${req.session.userId}`
       )
     )[0];
 

@@ -7,11 +7,11 @@ const { is } = require("express/lib/request");
 
 // Middleware to authenticate all incoming requests
 router.use(async function (req, res, next) {
-  console.log("Checking authentication for user:", req.session.id);
-  if (req.session && req.session.id) {
+  console.log("Checking authentication for user:", req.session.userId);
+  if (req.session && req.session.userId) {
     DButils.execQuery("SELECT id FROM users").then((users) => {
-      if (users.find((x) => x.id === req.session.id)) {
-        req.id = req.session.id;
+      if (users.find((x) => x.id === req.session.userId)) {
+        req.id = req.session.userId;
         next();
       }
     }).catch(err => next(err));
@@ -37,7 +37,7 @@ router.post('/favorites', async (req, res, next) => {
     // Remove prefix to get numeric id
     const recipe_id = recipeId.substring(1);
 
-    const id = req.session.id;
+    const id = req.session.userId;
     await user_utils.markAsFavorite(id, recipe_id, islocal);
     res.status(200).send("The Recipe successfully saved as favorite");
     } catch(error){
@@ -50,7 +50,7 @@ router.post('/favorites', async (req, res, next) => {
  */
 router.get('/favorites', async (req, res, next) => {
   try{
-    const id = req.session.id;
+    const id = req.session.userId;
     const recipes_id = await user_utils.getFavoriteRecipes(id);
      res.status(200).send(recipes_id);
   } catch(error){
@@ -74,7 +74,7 @@ router.delete('/favorites', async (req, res, next) => {
 
     // Remove the first character (L or S)
     const recipe_id = recipeId.substring(1);
-    const id = req.session.id; 
+    const id = req.session.userId; 
 
     await user_utils.removeFavoriteRecipe(id, recipe_id, islocal);
     res.status(200).send("The Recipe successfully removed from favorites");
@@ -99,7 +99,7 @@ router.post('/watched', async (req, res, next) => {
 
     // Remove the first character (L or S)
     const recipe_id = recipeId.substring(1);
-    const id = req.session.id;
+    const id = req.session.userId;
     await user_utils.markAsWatched(id, recipe_id, islocal);
     res.status(200).send("The Recipe successfully saved as watched");
   } catch(error){
@@ -113,7 +113,7 @@ router.post('/watched', async (req, res, next) => {
  */
 router.get('/watched', async (req, res, next) => {
   try{
-    const id = req.session.id;
+    const id = req.session.userId;
     const recipes_id = await user_utils.getLastWatched(id);
      res.status(200).send(recipes_id);
   } catch(error){
@@ -137,7 +137,7 @@ router.delete('/watched', async (req, res, next) => {
 
     // Remove the first character (L or S)
     const recipe_id = recipeId.substring(1);
-    const id = req.session.id; 
+    const id = req.session.userId; 
 
     await user_utils.removeLastWatched(id, recipe_id, islocal);
     res.status(200).send("The Recipe successfully removed from watched");
@@ -162,7 +162,7 @@ router.post('/likes', async (req, res, next) => {
 
     // Remove the first character (L or S)
     const recipe_id = recipeId.substring(1);
-    const id = req.session.id;
+    const id = req.session.userId;
     await user_utils.markAsLiked(id, recipe_id, islocal);
     res.status(200).send("The Recipe successfully saved as liked");
   } catch(error){
@@ -175,7 +175,7 @@ router.post('/likes', async (req, res, next) => {
  */
 router.get('/likes', async (req, res, next) => {
   try{
-    const id = req.session.id;
+    const id = req.session.userId;
     const recipes_id = await user_utils.getLikes(id);
      res.status(200).send(recipes_id);
   } catch(error){
@@ -199,7 +199,7 @@ router.delete('/likes', async (req, res, next) => {
 
     // Remove the first character (L or S)
     const recipe_id = recipeId.substring(1);
-    const id = req.session.id; 
+    const id = req.session.userId; 
 
     await user_utils.removeLike(id, recipe_id, islocal);
     res.status(200).send("The Recipe successfully removed from likes");
@@ -213,7 +213,7 @@ router.delete('/likes', async (req, res, next) => {
  */
 router.get('/myRecipes', async (req, res, next) => {
   try{
-    const id = req.session.id;
+    const id = req.session.userId;
     const recipes_id = await user_utils.getMyRecipes(id);
      res.status(200).send(recipes_id);
   } catch(error){
@@ -228,7 +228,7 @@ router.get('/myRecipes', async (req, res, next) => {
 router.post('/myRecipes', async (req, res, next) => {
   try{
     // save the recipe in the db
-    const id = req.session.id;
+    const id = req.session.userId;
     const recipe = req.body.recipe;
     if (!recipe) {
       return res.status(400).send("Invalid recipe data");
@@ -249,7 +249,7 @@ router.post('/myRecipes', async (req, res, next) => {
  */
 router.get('/myFamilyRecipes', async (req, res, next) => {
   try{
-    const id = req.session.id;
+    const id = req.session.userId;
     const recipes_id = await user_utils.getFamilyRecipes(id);
      res.status(200).send(recipes_id);
   } catch(error){

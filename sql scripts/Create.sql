@@ -1,4 +1,4 @@
--- Active: 1747986818466@@127.0.0.1@3306@mydb
+
 CREATE TABLE `users` (
     `id` int NOT NULL AUTO_INCREMENT,
     `username` varchar(255) NOT NULL,
